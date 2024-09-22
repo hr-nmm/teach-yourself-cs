@@ -227,3 +227,48 @@
 - objdump displays the machine code and assembly code mappings in .o files: $ objdump -d simpleops.o
 
 - Unlike C, which is a high-level language that can be compiled and run on a wide variety of systems, assembly code is very low level and specific to a particular hardware architecture.
+
+# ch3: C- debugging
+
+## gdb(gnu debugger)
+
+- useful for examining a program’s runtime state.
+- programmer can see data and stack memory.
+- when compiling for debugging, avoid compiler optimizations like building with -o
+- compile with -g option adds extra debugging information to executable bin file.
+
+- Sometimes, when a program terminates with an error, the operating system dumps a core file containing information about the state of the pro­gram when it crashed. The contents of this core file can be examined in GDB by running GDB with the core file and the executable that generated it:
+  $ gdb core a.out
+  (gdb) where # the where command shows point of crash
+
+- **gdb commands**: break lineNum/func_name, run, cont, quit, next, step, list, print var_name, where, frame
+- **display**- displays the variable values at every breakpoint automatically.
+- **frame** has levels - move to context of any frame on the stack.(0 is top frame)
+- no need to type next, use enter only.
+- where command is helpful for pinpointing the location of a program crash and for examining state at the interface between function calls and returns.
+- **x (examine memory)**: Display the contents of a memory location.
+- **make** command to rebuild an executable during a debug­ging session, and if the build is successful it will run the newly built program (when issued the run command).
+
+## Valgrind(memcheck tool)
+
+- Analyzes a pro­gram’s memory accesses to detect invalid memory us­age, uninitialized memory usage, and memory leaks.
+- since heap memory is allocated/deallocated during runtime, the above errors(memory errors) are not noticed at compilation.
+- errors:
+
+  1. Reading (getting) a value from uninitialized memory.(malloced but not given value)
+  2. writing to unallocated memory(unmalloced)
+  3. reading from unallocated memory(unmalloced)
+  4. Freeing already freed memory.
+  5. Memory leaks - A memory leak is a chunk of allocated heap memory space that is not referred to by any pointer variable in the program, and thus it cannot be freed.
+  6. Segmentation fault - occurs when a program attempts to access a memory location that it is not allowed to access.
+     eg: see ./03_big_fish.c => sometimes one ptr1 can write to ptr2 's address or even its metadata headers and when we free ptr1, ptr2's free() call crashes.
+
+- valgrind can only find heap memory faults, stack and data memory errors is not detected.
+
+- $ valgrind --leak-check=yes ./a.out => To view details of individual memory leaks.
+
+- Each line of Valgrind output is prefixed with the process’s ID (PID) eg: ==30159==
+
+- Apart from memcheck, Valgrind also has other tools massif(heap profiler to analyze memory usage over time), cachegrind( cache profiler that simulates how your program interacts with CPU caches.), helgrind(detect thread errors).
+
+### left/ todo: 3.5 Advance GDB features, 3.6 debugging assembly code, 3.7 debugging multithreaded programms with GDB
