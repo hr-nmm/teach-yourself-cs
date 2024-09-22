@@ -146,12 +146,84 @@
 - read 96-105 for string library functions.
 - sprintf prints into a string.
 - atoi and atof.
-<!--
-
-## 2.8 I/O in C
-
-## 2.9 Advanced C features -->
 
 ## 2.7 C Structs
 
--
+- struct studentT \*sptr;
+- sptr = malloc(sizeof(struct studentT));
+
+- Note that the call to malloc initializes sptr to point to a dynamically allo­cated struct in heap memory. Using the sizeof operator to compute malloc’s size request (e.g., sizeof(struct studentT)) ensures that malloc allocates space for all of the field values in the struct.
+
+- to accses individual fields use de-referencing:
+  (\*sptr).grad_yr = 2021;
+- C provides a special operator (->) that both dereferences a struct pointer and accesses one of its field values .
+
+- . dot for struct in stack and -> for struct in heap.
+
+### array of structs
+
+- struct studentT classroom_1[40];// an array of 40 struct studentT
+- struct studentT \*classroom_2;// a pointer to a struct studentT // (for a dynamically allocated array)
+- struct studentT \*classroom_3[40]; // an array of 40 struct studentT \* **not an array of struct studentT.(like 1 & 2)** // (each element stores a (struct studentT \*)
+
+### self referential structs
+
+- A struct can be defined with fields whose type is a pointer to the same struct type.
+- used to build linked lists, trees and graphs.
+
+## 2.8 I/O in C (stdio.h)
+
+- In Unix-like operating systems, **stdin, stdout, and stderr** are 3 standard data streams used for input and output operations.
+
+- A program can write (print) output to stdout and stderr, and it can read input values fromstdin. stdin is usually defined to read in input from the keyboard, whereas stdout and stderr output to the terminal.
+
+- redirect a.out's stdin to read from file infile.txt:=> $ ./a.out < infile.txt
+- - redirect a.out's stdout to print to file outfile.txt:=> $ ./a.out > outfile.txt
+- redirect a.out's stdout and stderr to a file outfile.txt:=> $ ./a.out < outfile.txt
+- redirect all three to different files:
+  (< redirects stdin, 1> stdout, and 2> stderr):
+  $ ./a.out < infile.txt 1> outfile.txt 2> errorfile.txt
+
+- getchar and putchar respectively read or write a single char­acter value from stdin and to stdout. getchar is particularly useful in C pro­grams that need to support careful error detection and handling of badly formed user input (scanf is not robust in this way).
+
+- ch = getchar(); // read in the next char value from stdin
+  putchar(ch);
+  // write the value of ch to stdout
+
+- The C standard I/O library (stdio.h) includes a stream interface for file I/O. A file stores **persistent data**: data that lives beyond the execution of the pro­gram that created it.
+- When opening a file, the current position starts at the very first character in the file, and it moves as a result of every character read (or written) to the file. To read the 10th character in a file, the first nine characters need to first be read
+
+- Step1: a pointer to FILE type is used to read/write files.
+- Step2: use fopen() to derefrence FILE ptr
+- Step3: use I/O operations to read, write, or move the current position in the file
+- Step4: fclose()
+
+- rewind(FILE \*f) =? resets current position to beginning of file
+- fseek(FILE \*f, long offset, int whence) => to move to a specific location in the file:
+
+## 2.9 Advanced features
+
+- **command line arguments**
+  use main(main(int argc, char \*argv[]))
+- **The void \* Type and Type Recasting**
+  int a = 10;
+  int *p = &a; // Pointer to int
+  void *vp = (void *)p; // Cast int pointer to void pointer
+  int *p2 = (int \*)vp; // Cast back to int pointer
+- **pointer arithmetic** : increment/decrement, add/sub, access contiguous memory
+- **Libraries: Using, Compiling, and Linking** :
+  - C library consiss of 2 parts : **API**(API to the library gets defined in header(.h) files.) and **Implementaion** of the library's functionality often made available to programs in a precompiled binary format that gets linked(added) into the binary executable created by gcc.
+  - eg: for strings: API is <string.h> and implementation of the C string library is part of the larger standard C li­ brary (libc) that the gcc compiler automatically links into every executable file it creates.
+  - These binary for­mats are not executable independently but they provide executable code that can be linked into (added into) an exe­cutable file by gcc at compilation time.
+
+### 2.9.7 compiling C to assembly and compiling and linking assembly and C code
+
+- $ gcc -m32 -S simpleops.c
+  => runs the assembler to create a .s text file. This command creates a file named simpleops.s with the compiler’s IA32 assembly translation of the C code.IA32 is nothing but assembly language.
+- $ gcc -m32 -c simpleops.s
+  => compiles to a relocatable object binary file (.o)
+- $ gcc -m32 -o simpleops simpleops.o
+  => creates a 32-bit executable file.This command creates a binary executable file, simpleops, for IA32 (and x86_­64) architectures.
+- objdump displays the machine code and assembly code mappings in .o files: $ objdump -d simpleops.o
+
+- Unlike C, which is a high-level language that can be compiled and run on a wide variety of systems, assembly code is very low level and specific to a particular hardware architecture.
